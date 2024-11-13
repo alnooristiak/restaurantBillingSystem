@@ -45,19 +45,19 @@ This C-based Restaurant Billing System is designed to automate the billing proce
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/yourusername/restaurant-billing-system.git
-   cd restaurant-billing-system
+   git clone https://github.com/alnooristiak/restaurantBillingSystem.git
+   cd restaurantBillingSystem
    ```
 
 2. **Compile the program**:
 
    ```bash
-   gcc restaurant_billing.c -o restaurant_billing
+   gcc restaurantBillingSystem.c -o restaurantBillingSystem
    ```
 
 3. **Run the program**:
    ```bash
-   ./restaurant_billing
+   ./restaurantBillingSystem
    ```
 
 ## Usage
