@@ -234,6 +234,60 @@ void showAllInvoices()
     fclose(fp);
 }
 
+// Function to search for invoices by customer name
+void searchInvoice()
+{
+    char searchName[50];
+    printf("\nEnter customer name to search: ");
+    fgets(searchName, sizeof(searchName), stdin);
+    searchName[strcspn(searchName, "\n")] = 0; // Remove the newline character
+
+    FILE *fp = fopen("RestaurantBills.csv", "r");
+    if (fp == NULL)
+    {
+        printf("Error: No invoices found.\n");
+        return;
+    }
+
+    char line[200];
+    int lineNumber = 0;
+    int found = 0;
+
+    printf("\n\n========== Search Results ==========\n");
+
+    while (fgets(line, sizeof(line), fp))
+    {
+        if (lineNumber == 0)
+        {
+            // Skip the header line
+            lineNumber++;
+            continue;
+        }
+
+        char customerName[50];
+        sscanf(line, "%49[^,]", customerName);
+
+        // Check if the customer name matches the search query
+        if (strcmp(customerName, searchName) == 0)
+        {
+            if (!found)
+            {
+                printf("\nInvoices for Customer: %s\n", searchName);
+                printf("Item, Quantity, Unit Price, Total\n");
+                found = 1;
+            }
+            printf("%s", line);
+        }
+    }
+
+    if (!found)
+    {
+        printf("No invoices found for customer: %s\n", searchName);
+    }
+
+    fclose(fp);
+}
+
 int main()
 {
     int choice, opt, n;
@@ -345,7 +399,7 @@ int main()
             showAllInvoices();
             break;
         case 3:
-            // Code for searching invoices can be added here
+            searchInvoice(); // Add the new search function
             break;
         case 4:
             printf("Exiting the system. Goodbye!\n");
