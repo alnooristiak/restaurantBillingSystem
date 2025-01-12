@@ -180,13 +180,65 @@ void saveBillToCSV(struct orders ord)
     printf("Bill saved to CSV successfully.\n");
 }
 
+// Function to show all invoices from CSV, separated by customer
+void showAllInvoices()
+{
+    FILE *fp = fopen("RestaurantBills.csv", "r");
+    if (fp == NULL)
+    {
+        printf("Error: No invoices found.\n");
+        return;
+    }
+
+    char line[200];
+    int lineNumber = 0;
+    char currentCustomer[50] = "";
+
+    printf("\n\n========== All Invoices ==========\n");
+
+    while (fgets(line, sizeof(line), fp))
+    {
+        if (lineNumber == 0)
+        {
+            // Skip the header line
+            lineNumber++;
+            continue;
+        }
+
+        char customerName[50];
+        sscanf(line, "%49[^,]", customerName);
+
+        // Print separator when a new customer is encountered
+        if (strcmp(currentCustomer, customerName) != 0)
+        {
+            if (lineNumber > 1)
+            {
+                printf("\n-----------------------------------------\n");
+            }
+            printf("\nInvoices for Customer: %s\n", customerName);
+            printf("Item, Quantity, Unit Price, Total\n");
+            strcpy(currentCustomer, customerName); // Update current customer
+        }
+
+        // Print the invoice details for the customer
+        printf("%s", line);
+        lineNumber++;
+    }
+
+    if (lineNumber == 1)
+    {
+        // Only header was read, no invoices
+        printf("No invoices found in the system.\n");
+    }
+
+    fclose(fp);
+}
+
 int main()
 {
     int choice, opt, n;
     char continueChoice = 'y', saveBill = 'y', contFlag = 'y';
     struct orders ord;
-    struct orders order;
-    char name[50];
     FILE *fp;
 
     while (contFlag == 'y')
@@ -290,72 +342,21 @@ int main()
             break;
         }
         case 2:
-        {
-            fp = fopen("RestaurantBill.dat", "r");
-            if (fp == NULL)
-            {
-                printf("No invoices found.\n");
-                break;
-            }
-            while (fread(&order, sizeof(struct orders), 1, fp))
-            {
-                float total = 0;
-                generateBillHeader(order.customer, order.date);
-                for (int i = 0; i < order.numOfItems; i++)
-                {
-                    generateBillBody(order.itm[i].item, order.itm[i].qty, order.itm[i].price);
-                    total += order.itm[i].qty * order.itm[i].price;
-                }
-                generateBillFooter(total);
-            }
-            fclose(fp);
+            showAllInvoices();
             break;
-        }
         case 3:
-        {
-            printf("Enter customer name: ");
-            fgets(name, sizeof(name), stdin);
-            name[strcspn(name, "\n")] = 0;
-
-            fp = fopen("RestaurantBill.dat", "r");
-            if (fp == NULL)
-            {
-                printf("No invoices found.\n");
-                break;
-            }
-
-            int found = 0;
-            while (fread(&order, sizeof(struct orders), 1, fp))
-            {
-                if (strcmp(order.customer, name) == 0)
-                {
-                    float total = 0;
-                    generateBillHeader(order.customer, order.date);
-                    for (int i = 0; i < order.numOfItems; i++)
-                    {
-                        generateBillBody(order.itm[i].item, order.itm[i].qty, order.itm[i].price);
-                        total += order.itm[i].qty * order.itm[i].price;
-                    }
-                    generateBillFooter(total);
-                    found = 1;
-                }
-            }
-            if (!found)
-            {
-                printf("No invoices found for %s.\n", name);
-            }
-            fclose(fp);
+            // Code for searching invoices can be added here
             break;
-        }
         case 4:
-            printf("Exiting system. Goodbye!\n");
+            printf("Exiting the system. Goodbye!\n");
             exit(0);
         default:
-            printf("Invalid option. Please try again.\n");
+            printf("Invalid choice. Please try again.\n");
         }
 
-        printf("\nPerform another operation? (y/n): ");
+        printf("\nDo you want to perform another operation? (y/n): ");
         scanf(" %c", &contFlag);
+        getchar();
     }
 
     return 0;
